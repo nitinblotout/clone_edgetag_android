@@ -14,7 +14,7 @@ object Constant {
   const val EDGE_TAG_REST_API_EVENTS_PUSH_PATH = "/tag"
   const val EDGE_CONSENT_REST_API_EVENTS_PUSH_PATH = "/consent"
 
-  const val BOSDK_MAJOR_VERSION = 1
-  const val BOSDK_MINOR_VERSION = 0
+  const val BOSDK_MAJOR_VERSION = 0
+  const val BOSDK_MINOR_VERSION = 1
   const val BOSDK_PATCH_VERSION = 0
 }
