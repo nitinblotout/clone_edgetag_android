@@ -1,6 +1,6 @@
 # EdgeTag Android SDK
 
-[![](https://jitpack.io/v/blotoutio/edgetag-android.svg)](https://jitpack.io/#blotoutio/sdk-android)
+[![](https://jitpack.io/v/blotoutio/edgetag-android.svg)](https://jitpack.io/#blotoutio/edgetag-android)
 
 
 # Documentation
