@@ -54,7 +54,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 groupId 'com.edgetag'
-                version '1.0.0'
+                version '0.1.0'
                 artifactId 'Edgetag'
             }
         }
