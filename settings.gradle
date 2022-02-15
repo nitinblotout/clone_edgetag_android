@@ -1,0 +1,2 @@
+include ':blotoutapp'
+include ':edgetagSDK'

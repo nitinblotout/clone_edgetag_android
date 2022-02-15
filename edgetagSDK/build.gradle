@@ -1,0 +1,97 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'maven-publish'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 30
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+}
+
+allprojects{
+    repositories{
+        maven {url 'https://jitpack.io'}
+    }
+}
+
+
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId 'com.edgetag'
+                version '1.0.0'
+                artifactId 'Edgetag'
+            }
+        }
+    }
+}
+
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation deps.core_ktx
+    implementation deps.androidx_appcompact
+    implementation deps.google_material
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+
+    androidTestImplementation deps.junit_test
+    androidTestImplementation deps.espresso
+
+    implementation deps.android_lifecycle_process
+    implementation deps.android_lifecycle_common
+
+    implementation 'com.android.installreferrer:installreferrer:2.1'
+
+    //Retrofit
+    implementation deps.retrofit
+    implementation deps.retrofit_gson_converter
+    implementation deps.okhttp
+    implementation deps.okhttp_logging_interceptor
+    implementation deps.rxRetrofitAdapter
+
+    implementation deps.androidx_room_ktx
+    kapt deps.androidx_room_compiler
+
+
+    //test
+    testImplementation deps.mockito
+    testImplementation deps.mockito_android
+    testImplementation deps.junit
+    testImplementation deps.coroutine_test
+}
