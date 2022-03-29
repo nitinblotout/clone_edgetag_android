@@ -7,17 +7,16 @@ import com.edgetag.DependencyInjectorImpl
 import com.edgetag.data.database.EventDatabaseService
 import com.edgetag.data.database.entity.EventEntity
 import com.edgetag.deviceinfo.device.DeviceInfo
-import com.edgetag.model.*
-import com.edgetag.model.edgetag.EdgetagMetaData
+import com.edgetag.model.ErrorCodes
+import com.edgetag.model.InternalError
+import com.edgetag.model.Result
 import com.edgetag.model.edgetag.EdgeTag
+import com.edgetag.model.edgetag.EdgetagMetaData
 import com.edgetag.model.edgetag.Storage
 import com.edgetag.network.ApiDataProvider
 import com.edgetag.repository.data.SharedPreferenceSecureVault
-import com.edgetag.util.*
+import com.edgetag.util.Constant
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 
 class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
@@ -47,18 +46,18 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
         for ((key, value) in providerInfo) {
           if (key.contentEquals("all") && !value) {
             consentInproviderAvailable = false
-            return Result.Error(InternalError(code = 0, msg = "None of provider selected"))
+            return Result.Error(InternalError(code = ErrorCodes.ERROR_CODE_NO_PROVIDER_FOUND, msg = "None of provider selected"))
           } else if (consentData?.get("all") == true) {
             consentInproviderAvailable = true
           } else if (value && (consentData?.get(key) == true || consentData?.get("all") == true)) {
             consentInproviderAvailable = true
           } else if (!value && (consentData?.get(key) == true)) {
-            return Result.Error(InternalError(code = 0, msg = "provider not selected"))
+            return Result.Error(InternalError(code = ErrorCodes.ERROR_CODE_CONSENT_AVAILABLE_BUT_NO_PROVIDER_FOUND, msg = "Consent available but provider not selected"))
           }
         }
       }
       if (!consentInproviderAvailable) {
-        return Result.Error(InternalError(code = 0, msg = "No Consent provided"))
+        return Result.Error(InternalError(code = 8, msg = "No Consent provided"))
       }
 
       val consentInfo = Gson().fromJson(
@@ -89,11 +88,11 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
       tagMetadata.data = tagInfo
       publishEvents(tagMetadata)
     } catch (e: Exception) {
-      Log.e(TAG, e.localizedMessage!!)
+      //Log.e(TAG, e.localizedMessage!!)
       Result.Error(
         InternalError(
           code = ErrorCodes.ERROR_CODE_SDK_INTERNAL_ERROR,
-          msg = e.localizedMessage!!
+          msg = "Internal error"
         )
       )
     }
@@ -124,11 +123,11 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
       consentMetadata.userAgent = DeviceInfo(context).userAgent
       publishConsentEvents(consentMetadata)
     } catch (e: Exception) {
-      Log.e(TAG, e.localizedMessage!!)
+      //Log.e(TAG, e.localizedMessage!!)
       Result.Error(
         InternalError(
           code = ErrorCodes.ERROR_CODE_SDK_INTERNAL_ERROR,
-          msg = e.localizedMessage!!
+          msg = "Internal error"
         )
       )
     }
@@ -149,7 +148,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
     val refferals = DependencyInjectorImpl.getInstance().getSecureStorageService()
       .fetchString(Constant.REFFERAL)
     var refferalInLocalStorage = hashMapOf<Any, Any>()
-    if (refferals.isNotEmpty()) {
+    if (!refferals.isNullOrEmpty()) {
       refferalInLocalStorage =
         Gson().fromJson(refferals, HashMap::class.java) as HashMap<Any, Any>
     }
@@ -161,10 +160,11 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
       DependencyInjectorImpl.getInstance().getSecureStorageService()
         .fetchString(Constant.AD_ID)
     )
-    refferalInLocalStorage.put(
+    DependencyInjectorImpl.getInstance().mReferrerDetails?.let { refferalInLocalStorage.put(
       "referral",
-      DependencyInjectorImpl.getInstance().mReferrerDetails!!.installReferrer
-    )
+      it.installReferrer
+    ) }
+
     for (result in manifestConfigurationResponse.result!!) {
       for (captureRule in result?.rules?.capture!!) {
         if (refferalInLocalStorage.containsKey(captureRule.key!!)) {

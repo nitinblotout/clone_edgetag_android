@@ -2,6 +2,7 @@
 
 package com.edgetag.sampleapp.view.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Spannable;
@@ -75,7 +76,7 @@ public class ShoppingListAdapter extends
         ItemViewHolder itemViewHolder = new ItemViewHolder(view);
         return itemViewHolder;
     }
-
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, final int position) {
         holder.itemName.setText(productList.get(position).getItemName());

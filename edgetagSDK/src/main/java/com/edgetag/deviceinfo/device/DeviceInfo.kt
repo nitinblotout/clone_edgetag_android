@@ -209,16 +209,16 @@ class DeviceInfo(private val context: Context) {
 
   val isRunningOnEmulator: Boolean
     get() = (Build.FINGERPRINT.startsWith("generic")
-      || Build.FINGERPRINT.startsWith("unknown")
-      || Build.MODEL.contains("google_sdk")
-      || Build.MODEL.contains("Emulator")
-      || Build.MODEL.contains("Android SDK built for x86")
-      || Build.MANUFACTURER.contains("Genymotion")
-      || Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")
-      || "google_sdk" == Build.PRODUCT
-      || Build.PRODUCT.contains("vbox86p")
-      || Build.DEVICE.contains("vbox86p")
-      || Build.HARDWARE.contains("vbox86"))
+            || Build.FINGERPRINT.startsWith("unknown")
+            || Build.MODEL.contains("google_sdk")
+            || Build.MODEL.contains("Emulator")
+            || Build.MODEL.contains("Android SDK built for x86")
+            || Build.MANUFACTURER.contains("Genymotion")
+            || Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")
+            || "google_sdk" == Build.PRODUCT
+            || Build.PRODUCT.contains("vbox86p")
+            || Build.DEVICE.contains("vbox86p")
+            || Build.HARDWARE.contains("vbox86"))
 
 
   val isDeviceRooted: Boolean
@@ -256,10 +256,14 @@ class DeviceInfo(private val context: Context) {
 
   val userAgent: String
     get() {
-      val systemUa = System.getProperty("http.agent")
-      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        WebSettings.getDefaultUserAgent(context) + "__" + systemUa
-      } else WebView(context).settings.userAgentString + "__" + systemUa
+      try {
+        val systemUa = System.getProperty("http.agent")
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+          WebSettings.getDefaultUserAgent(context) + "__" + systemUa
+        } else WebView(context).settings.userAgentString + "__" + systemUa
+      }catch (e:java.lang.Exception){
+        return ""
+      }
     }
 
   @RequiresApi(Build.VERSION_CODES.M)
@@ -291,10 +295,7 @@ class DeviceInfo(private val context: Context) {
         DependencyInjectorImpl.getInstance().getSecureStorageService()
           .storeString(Constant.AD_ID, adId)
       }catch (e:Exception){
-
       }
     }
   }
-
-
 }
