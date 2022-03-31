@@ -1,15 +1,14 @@
 package com.edgetag.network
 
-import android.util.Log
 import com.edgetag.DependencyInjectorImpl
-import com.edgetag.model.*
+import com.edgetag.model.ErrorCodes
+import com.edgetag.model.InternalError
+import com.edgetag.model.Result
 import com.edgetag.model.edgetag.EdgetagMetaData
 import com.edgetag.model.edgetag.ManifestConfigurationResponse
 import com.edgetag.util.Constant
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.POST
 
 class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
 
@@ -45,7 +44,7 @@ class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
 
   }
 
-  fun String.saveCookies() {
+  fun String.saveCookies()  {
     if (DependencyInjectorImpl.getInstance().getSecureStorageService()
         .fetchString(Constant.TAG_USER_ID).isEmpty()
     ) {
