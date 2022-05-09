@@ -8,6 +8,7 @@ import com.edgetag.MockTestConstants
 import com.edgetag.data.database.EventDatabase
 import com.edgetag.model.ErrorCodes
 import com.edgetag.model.InternalError
+import com.edgetag.model.edgetag.ManifestConfigurationResponse
 import com.edgetag.repository.ManifestRepository
 import com.edgetag.repository.data.ConfigurationDataManager
 import com.edgetag.repository.data.SharedPreferenceSecureVault
@@ -20,6 +21,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+import retrofit2.Call
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -27,6 +29,7 @@ class ManifestServiceTest {
 
     @Mock
     lateinit var configureDataManager: ConfigurationDataManager
+
     @Mock
     private lateinit var eventDatabase: EventDatabase
 
@@ -34,10 +37,11 @@ class ManifestServiceTest {
     val coroutineTestRule = CoroutineTestRule()
 
     private lateinit var manifestRepository: ManifestRepository
-    private lateinit var  context:Application
+    private lateinit var context: Application
+
     @Mock
-    lateinit var  secureVault:SharedPreferenceSecureVault
-    private lateinit var  editor:SharedPreferences.Editor
+    lateinit var secureVault: SharedPreferenceSecureVault
+    private lateinit var editor: SharedPreferences.Editor
 
     @Before
     fun setUp() {
@@ -48,12 +52,13 @@ class ManifestServiceTest {
         val blotoutAnalyticsConfiguration = MockTestConstants.setupBlotoutAnalyticsConfiguration()
         Mockito.mock(SharedPreferences::class.java)
         editor = Mockito.mock(SharedPreferences.Editor::class.java)
-        val hostConfiguration = HostConfiguration(baseUrl = blotoutAnalyticsConfiguration.endPointUrl)
+        val hostConfiguration =
+            HostConfiguration(baseUrl = blotoutAnalyticsConfiguration.endPointUrl)
 
         DependencyInjectorImpl.init(
             application = context,
             secureStorageService = secureVault,
-            hostConfiguration = hostConfiguration ,eventDatabase
+            hostConfiguration = hostConfiguration, eventDatabase
         )
     }
 
@@ -62,26 +67,52 @@ class ManifestServiceTest {
 
         val apiResult = com.edgetag.model.Result.Success(MockTestConstants.getManifestResponse())
         coroutineTestRule.runBlockingTest {
-            Mockito.`when`(configureDataManager.downloadManifestConfiguration()).thenReturn(apiResult)
+            //Mockito.`when`(configureDataManager.downloadManifestConfiguration()).thenReturn(apiResult)
+            manifestRepository.fetchManifestConfiguration(object :
+                ApiDataProvider<ManifestConfigurationResponse?>() {
+                override fun onFailed(
+                    errorCode: Int,
+                    message: String,
+                    call: Call<ManifestConfigurationResponse?>
+                ) {
+                    assert(false)
+                }
 
-            when(manifestRepository.fetchManifestConfiguration()){
-                is com.edgetag.model.Result.Success-> assert(true)
-                else-> assert(false)
-            }
+                override fun onError(t: Throwable, call: Call<ManifestConfigurationResponse?>) {
+                    assert(false)
+                }
+
+                override fun onSuccess(data: ManifestConfigurationResponse?) {
+                    assert(true)
+                }
+            })
         }
 
     }
 
     @Test
     fun `test manifest when server not provide response`() {
-        val apiResult = com.edgetag.model.Result.Error(InternalError(code = ErrorCodes.ERROR_CODE_MANIFEST_NOT_AVAILABLE))
+        val apiResult =
+            com.edgetag.model.Result.Error(InternalError(code = ErrorCodes.ERROR_CODE_MANIFEST_NOT_AVAILABLE))
         coroutineTestRule.runBlockingTest {
-            Mockito.`when`(configureDataManager.downloadManifestConfiguration()).thenReturn(apiResult)
+            manifestRepository.fetchManifestConfiguration(object :
+                ApiDataProvider<ManifestConfigurationResponse?>() {
+                override fun onFailed(
+                    errorCode: Int,
+                    message: String,
+                    call: Call<ManifestConfigurationResponse?>
+                ) {
+                    assert(false)
+                }
 
-            when(manifestRepository.fetchManifestConfiguration()){
-                is com.edgetag.model.Result.Success-> assert(false)
-                else-> assert(true)
-            }
+                override fun onError(t: Throwable, call: Call<ManifestConfigurationResponse?>) {
+                    assert(false)
+                }
+
+                override fun onSuccess(data: ManifestConfigurationResponse?) {
+                    assert(true)
+                }
+            })
         }
     }
 }

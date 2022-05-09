@@ -12,8 +12,8 @@ import retrofit2.Response
 
 class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
 
-  suspend fun getSDKManifest(): Result<ManifestConfigurationResponse?> {
-    return processNetworkResponse(remoteApiService.getSDKManifest())
+  fun getSDKManifest(): Call<ManifestConfigurationResponse> {
+    return remoteApiService.getSDKManifest()
   }
 
   fun postEvents(events: EdgetagMetaData): Call<Any> {
