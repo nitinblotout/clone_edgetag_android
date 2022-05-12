@@ -1,6 +1,5 @@
 package com.edgetag
 
-import android.util.Log
 import android.webkit.URLUtil
 import com.edgetag.model.ErrorCodes
 import com.edgetag.util.Constant
@@ -27,7 +26,7 @@ class EdgeTagConfiguration {
       val storageService = DependencyInjectorImpl.getInstance().getSecureStorageService()
       storageService.storeString(Constant.SDK_END_POINT_URL, endPointUrl!!)
     } catch (e: Exception) {
-      Log.e(TAG,e.localizedMessage)
+      e.printStackTrace()
     }
   }
 }

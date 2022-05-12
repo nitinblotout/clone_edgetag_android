@@ -2,7 +2,6 @@ package com.edgetag.repository
 
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.util.Log
 import com.edgetag.DependencyInjectorImpl
 import com.edgetag.data.database.EventDatabaseService
 import com.edgetag.data.database.entity.EventEntity
@@ -187,11 +186,10 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
       EventDatabaseService().insertEvent(eventEntity)
       Result.Success("")
     } catch (e: Exception) {
-      Log.e(TAG, e.localizedMessage!!)
       Result.Error(
         InternalError(
           code = ErrorCodes.ERROR_CODE_SDK_INTERNAL_ERROR,
-          msg = e.localizedMessage!!
+          msg = e.localizedMessage?:""
         )
       )
     }

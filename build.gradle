@@ -8,7 +8,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
 
@@ -47,6 +47,7 @@ ext.deps =[
         'retrofit_gson_converter' : "com.squareup.retrofit2:converter-gson:$versions.retrofitVersion",
         'okhttp': "com.squareup.okhttp3:okhttp:$versions.okhttpVersion",
         'okhttp_logging_interceptor': "com.squareup.okhttp3:logging-interceptor:$versions.okhttpVersion",
+        'okhttpUrlConnection':"com.squareup.okhttp3:okhttp-urlconnection:$versions.okhttpVersion",
         'rxRetrofitAdapter': "com.squareup.retrofit2:adapter-rxjava2:$versions.rxRetrofitAdapterVersion",
         'androidx_room_compiler':"androidx.room:room-compiler:$versions.roomVersion",
         'androidx_room_runtime' :"androidx.room:room-runtime:$versions.roomVersion",

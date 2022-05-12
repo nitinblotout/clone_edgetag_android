@@ -138,7 +138,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                 Log.e(TAG, e.toString())
                 completionHandler.onError(
                     code = ErrorCodes.ERROR_CODE_CONSENT_ERROR,
-                    msg = e.localizedMessage
+                    msg = e.localizedMessage?:""
                 )
             }
         }
@@ -157,10 +157,10 @@ open class EdgeTagInternal : EdgeTagInterface {
                     EventRepository(
                         DependencyInjectorImpl.getInstance().getSecureStorageService()
                     )
-                val result = tagInfo.let {
+                val result = tagInfo?.let {
                     eventsRepository.prepareTagEvent(
                         tagName = eventName,
-                        tagInfo = tagInfo!!,
+                        tagInfo = tagInfo,
                         providerInfo = providerInfo!!
                     )
                 }
@@ -175,7 +175,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                 Log.e(TAG, e.toString())
                 completionHandler.onError(
                     code = ErrorCodes.ERROR_CODE_TAG_ERROR,
-                    msg = e.localizedMessage
+                    msg = e.localizedMessage?:""
                 )
             }
         }

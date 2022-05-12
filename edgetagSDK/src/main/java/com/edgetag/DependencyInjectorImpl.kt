@@ -1,7 +1,6 @@
 package com.edgetag
 
 import android.app.Application
-import android.util.Log
 import com.android.installreferrer.api.ReferrerDetails
 import com.edgetag.data.database.EventDatabase
 import com.edgetag.deviceinfo.device.DeviceInfo
@@ -49,7 +48,7 @@ class DependencyInjectorImpl private constructor(
             try {
                 instance = DependencyInjectorImpl(application, secureStorageService, hostConfiguration, mEventDatabase)
             }catch (e:Exception){
-                Log.d(TAG,e.localizedMessage!!)
+                e.printStackTrace()
                 return false
             }
             return true
@@ -111,7 +110,7 @@ class DependencyInjectorImpl private constructor(
             InstallRefferal().startClient(mApplication)
             DeviceInfo(mApplication).getAdvertisingId()
         }catch (e:Throwable){
-            Log.d(TAG,e.localizedMessage!!)
+            e.printStackTrace()
         }
     }
 }
