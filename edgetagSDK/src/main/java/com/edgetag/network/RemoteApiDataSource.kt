@@ -24,6 +24,10 @@ class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
     return remoteApiService.postConsentEvents(events)
   }
 
+  fun postUserEvents(events: EdgetagMetaData): Call<Any> {
+    return remoteApiService.postUserEvents(events)
+  }
+
   private fun <T> processNetworkResponse(response: Response<T>): Result<T?> {
     return try {
       when (response.isSuccessful) {

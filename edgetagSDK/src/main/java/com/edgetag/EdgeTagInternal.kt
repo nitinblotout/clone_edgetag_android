@@ -115,32 +115,39 @@ open class EdgeTagInternal : EdgeTagInterface {
         consentInfo: HashMap<String, Boolean>,
         completionHandler: CompletionHandler
     ) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
+        if(isSdkinitiliazed) {
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
 
-                val eventsRepository =
-                    EventRepository(
-                        DependencyInjectorImpl.getInstance().getSecureStorageService()
-                    )
-                val result = consentInfo.let {
-                    eventsRepository.prepareConsent(
-                        consentInfo = consentInfo
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    val result = consentInfo.let {
+                        eventsRepository.prepareConsent(
+                            consentInfo = consentInfo
+                        )
+                    }
+                    when (result) {
+                        is Result.Success -> completionHandler.onSuccess()
+                        is Result.Error -> completionHandler.onError(
+                            code = result.errorData.code,
+                            msg = result.errorData.msg
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    completionHandler.onError(
+                        code = ErrorCodes.ERROR_CODE_CONSENT_ERROR,
+                        msg = e.localizedMessage ?: ""
                     )
                 }
-                when (result) {
-                    is Result.Success -> completionHandler.onSuccess()
-                    is Result.Error -> completionHandler.onError(
-                        code = result.errorData.code,
-                        msg = result.errorData.msg
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.toString())
-                completionHandler.onError(
-                    code = ErrorCodes.ERROR_CODE_CONSENT_ERROR,
-                    msg = e.localizedMessage?:""
-                )
             }
+        }else{
+            completionHandler.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = "SDK is not initialized"
+            )
         }
     }
 
@@ -150,34 +157,81 @@ open class EdgeTagInternal : EdgeTagInterface {
         providerInfo: HashMap<String, Boolean>?,
         completionHandler: CompletionHandler
     ) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
+        if(isSdkinitiliazed) {
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
 
-                val eventsRepository =
-                    EventRepository(
-                        DependencyInjectorImpl.getInstance().getSecureStorageService()
-                    )
-                val result = tagInfo?.let {
-                    eventsRepository.prepareTagEvent(
-                        tagName = eventName,
-                        tagInfo = tagInfo,
-                        providerInfo = providerInfo!!
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    val result = tagInfo?.let {
+                        eventsRepository.prepareTagEvent(
+                            tagName = eventName,
+                            tagInfo = tagInfo,
+                            providerInfo = providerInfo!!
+                        )
+                    }
+                    when (result) {
+                        is Result.Success -> completionHandler.onSuccess()
+                        is Result.Error -> completionHandler.onError(
+                            code = result.errorData.code,
+                            msg = result.errorData.msg
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    completionHandler.onError(
+                        code = ErrorCodes.ERROR_CODE_TAG_ERROR,
+                        msg = e.localizedMessage ?: ""
                     )
                 }
-                when (result) {
-                    is Result.Success -> completionHandler.onSuccess()
-                    is Result.Error -> completionHandler.onError(
-                        code = result.errorData.code,
-                        msg = result.errorData.msg
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.toString())
-                completionHandler.onError(
-                    code = ErrorCodes.ERROR_CODE_TAG_ERROR,
-                    msg = e.localizedMessage?:""
-                )
             }
+        }else{
+            completionHandler.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = "SDK is not initialized"
+            )
+        }
+    }
+
+    override fun user(
+        key: String,
+        value: String,
+        completionHandler: CompletionHandler
+    ) {
+        if (isSdkinitiliazed) {
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
+
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    val result = eventsRepository.prepareUser(
+                        key = key,
+                        value = value
+                    )
+                    when (result) {
+                        is Result.Success -> completionHandler.onSuccess()
+                        is Result.Error -> completionHandler.onError(
+                            code = result.errorData.code,
+                            msg = result.errorData.msg
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    completionHandler.onError(
+                        code = ErrorCodes.ERROR_CODE_TAG_ERROR,
+                        msg = e.localizedMessage ?: ""
+                    )
+                }
+            }
+        } else {
+            completionHandler.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = "SDK is not initialized"
+            )
         }
     }
 }

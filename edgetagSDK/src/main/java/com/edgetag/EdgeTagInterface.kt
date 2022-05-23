@@ -1,7 +1,7 @@
 package com.edgetag
 
 import android.app.Application
-import com.edgetag.model.*
+import com.edgetag.model.CompletionHandler
 
 interface EdgeTagInterface {
 
@@ -9,5 +9,11 @@ interface EdgeTagInterface {
 
     fun consent( consentInfo:HashMap<String, Boolean>,completionHandler: CompletionHandler)
 
-    fun tag( eventName:String,eventInfo:HashMap<String, Any>?,providerInfo:HashMap<String, Boolean>?,completionHandler: CompletionHandler)
+    fun tag( eventName:String,tagInfo:HashMap<String, Any>?,providerInfo:HashMap<String, Boolean>?,completionHandler: CompletionHandler)
+
+    fun user(
+        key: String,
+        value: String,
+        completionHandler: CompletionHandler
+    )
 }

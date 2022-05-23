@@ -25,9 +25,11 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
   EditText consent_text;
   TextView consent_response;
   Button provider_button_press;
+  Button user_button_press;
   EditText tag_key;
   EditText provider_key;
   TextView tag_response;
+  TextView user_response;
   Gson gson;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,9 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
     tag_key = findViewById(R.id.tag_key);
     provider_key = findViewById(R.id.provider_key);
     tag_response = findViewById(R.id.tag_response);
+
+    user_button_press= findViewById(R.id.user_button_press);
+    user_response = findViewById(R.id.user_response);
 
     HashMap<String,Boolean> consentHashMap = new HashMap<>();
     consentHashMap.put("facebook",true);
@@ -112,6 +117,20 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
         @Override
         public void onError(int code, String msg) {
           tag_response.setText(msg);
+        }
+      });
+    });
+
+    user_button_press.setOnClickListener(v->{
+      EdgeTag.INSTANCE.user("email","me@domain.com", new CompletionHandler() {
+        @Override
+        public void onSuccess() {
+          user_response.setText("Success");
+        }
+
+        @Override
+        public void onError(int code, String msg) {
+          user_response.setText(msg);
         }
       });
     });

@@ -39,4 +39,12 @@ class EdgetagMetaData {
     @Expose
     var tag_user_id: String? = null
 
+    @SerializedName(Constant.KEY)
+    @Expose
+    var key: String? = null
+
+    @SerializedName(Constant.VALUE)
+    @Expose
+    var value: String? = null
+
 }

@@ -22,5 +22,9 @@ interface RemoteApiService {
   @POST(Constant.EDGE_CONSENT_REST_API_EVENTS_PUSH_PATH)
   fun postConsentEvents(@Body body: EdgetagMetaData): Call<Any>
 
+  @Retry(3)
+  @POST(Constant.EDGE_USER_EVENTS_PUSH_PATH)
+  fun postUserEvents(@Body body: EdgetagMetaData): Call<Any>
+
 
 }
