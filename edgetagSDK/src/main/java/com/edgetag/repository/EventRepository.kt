@@ -132,6 +132,45 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
     }
   }
 
+  fun prepareUser(
+    key: String, value: String
+  ): Result<String> {
+    return try {
+      val consentMetadata = EdgetagMetaData()
+      consentMetadata.key = key
+      consentMetadata.value = value
+      val storage = Storage()
+      val edgeTag = EdgeTag()
+      edgeTag.providers = getProviders()
+      edgeTag.consent = Gson().fromJson<HashMap<String, Boolean>>(
+        DependencyInjectorImpl.getInstance().getSecureStorageService()
+          .fetchString(Constant.CONSENT_DATA),
+        HashMap::class.java
+      )
+      storage.edgeTag = edgeTag
+      consentMetadata.storage = storage
+      consentMetadata.tag_user_id =
+        DependencyInjectorImpl.getInstance().getSecureStorageService()
+          .fetchString(Constant.TAG_USER_ID)
+      consentMetadata.consentString = edgeTag.consent
+      if (this::visibleActivity.isInitialized) {
+        consentMetadata.pageUrl =
+          visibleActivity.localClassName.substringAfterLast(delimiter = '.')
+      }
+      val context = DependencyInjectorImpl.getInstance().getApplication()
+      consentMetadata.userAgent = DeviceInfo(context).userAgent
+      publishUserEvents(consentMetadata)
+    } catch (e: Exception) {
+      //Log.e(TAG, e.localizedMessage!!)
+      Result.Error(
+        InternalError(
+          code = ErrorCodes.ERROR_CODE_SDK_INTERNAL_ERROR,
+          msg = "Internal error"
+        )
+      )
+    }
+  }
+
   private fun getProviders(): MutableList<String> {
     val manifestConfigurationResponse = DependencyInjectorImpl.getInstance()
       .getManifestRepository().manifestConfigurationResponse
@@ -217,6 +256,25 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
   private fun publishConsentEvents(event: EdgetagMetaData): Result<String> {
     DependencyInjectorImpl.getInstance().getConfigurationManager()
       .publishConsentEvents(event, object : ApiDataProvider<Any?>() {
+        override fun onFailed(
+          errorCode: Int,
+          message: String,
+          call: Call<Any?>
+        ) {
+        }
+
+        override fun onError(t: Throwable, call: Call<Any?>) {
+        }
+
+        override fun onSuccess(data: Any?) {
+        }
+      })
+    return Result.Success("")
+  }
+
+  private fun publishUserEvents(event: EdgetagMetaData): Result<String> {
+    DependencyInjectorImpl.getInstance().getConfigurationManager()
+      .publishUserEvents(event, object : ApiDataProvider<Any?>() {
         override fun onFailed(
           errorCode: Int,
           message: String,

@@ -22,4 +22,8 @@ class ConfigurationDataManagerImpl(private val dataSource: RemoteApiDataSource) 
     dataSource.postConsentEvents(events).enqueue(handler)
   }
 
+  override fun publishUserEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>) {
+    dataSource.postUserEvents(events).enqueue(handler)
+  }
+
 }

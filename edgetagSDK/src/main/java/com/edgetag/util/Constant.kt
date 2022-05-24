@@ -9,10 +9,13 @@ object Constant {
   const val CONSENT_AVAILABLE = "consent_available"
   const val TAG_USER_ID = "tag_user_id"
   const val REFFERAL = "refferal"
+  const val KEY = "key"
+  const val VALUE = "value"
 
   const val EDGE_TAG_REST_API_MANIFEST_PULL_PATH = "/init"
   const val EDGE_TAG_REST_API_EVENTS_PUSH_PATH = "/tag"
   const val EDGE_CONSENT_REST_API_EVENTS_PUSH_PATH = "/consent"
+  const val EDGE_USER_EVENTS_PUSH_PATH ="/user"
 
   const val BOSDK_MAJOR_VERSION = 0
   const val BOSDK_MINOR_VERSION = 1
