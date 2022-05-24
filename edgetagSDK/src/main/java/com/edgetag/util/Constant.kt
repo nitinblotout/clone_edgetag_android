@@ -17,8 +17,9 @@ object Constant {
   const val EDGE_CONSENT_REST_API_EVENTS_PUSH_PATH = "/consent"
   const val EDGE_USER_EVENTS_PUSH_PATH ="/user"
 
-
   const val BOSDK_MAJOR_VERSION = 0
   const val BOSDK_MINOR_VERSION = 3
   const val BOSDK_PATCH_VERSION = 0
+
+  val allowedUserKeys = arrayOf("email", "phone", "firstName","lastName","gender","dateOfBirth","country","state","city","zip")
 }

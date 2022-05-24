@@ -12,6 +12,7 @@ import com.edgetag.network.ApiDataProvider
 import com.edgetag.network.HostConfiguration
 import com.edgetag.repository.EventRepository
 import com.edgetag.repository.impl.SharedPreferenceSecureVaultImpl
+import com.edgetag.util.Constant
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -146,7 +147,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         }else{
             completionHandler.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
-                msg = "SDK is not initialized"
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
         }
     }
@@ -190,7 +191,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         }else{
             completionHandler.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
-                msg = "SDK is not initialized"
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
         }
     }
@@ -201,36 +202,43 @@ open class EdgeTagInternal : EdgeTagInterface {
         completionHandler: CompletionHandler
     ) {
         if (isSdkinitiliazed) {
-            CoroutineScope(Dispatchers.Default).launch {
-                try {
+            if(Constant.allowedUserKeys.contains(key)) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    try {
 
-                    val eventsRepository =
-                        EventRepository(
-                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        val eventsRepository =
+                            EventRepository(
+                                DependencyInjectorImpl.getInstance().getSecureStorageService()
+                            )
+                        val result = eventsRepository.prepareUser(
+                            key = key,
+                            value = value
                         )
-                    val result = eventsRepository.prepareUser(
-                        key = key,
-                        value = value
-                    )
-                    when (result) {
-                        is Result.Success -> completionHandler.onSuccess()
-                        is Result.Error -> completionHandler.onError(
-                            code = result.errorData.code,
-                            msg = result.errorData.msg
+                        when (result) {
+                            is Result.Success -> completionHandler.onSuccess()
+                            is Result.Error -> completionHandler.onError(
+                                code = result.errorData.code,
+                                msg = result.errorData.msg
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, e.toString())
+                        completionHandler.onError(
+                            code = ErrorCodes.ERROR_CODE_TAG_ERROR,
+                            msg = e.localizedMessage ?: ""
                         )
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, e.toString())
-                    completionHandler.onError(
-                        code = ErrorCodes.ERROR_CODE_TAG_ERROR,
-                        msg = e.localizedMessage ?: ""
-                    )
                 }
+            }else{
+                completionHandler.onError(
+                    code = ErrorCodes.ERROR_CODE_KEY_NOT_ALLOWED,
+                    msg = ErrorCodes.ERROR_CODE_KEY_NOT_ALLOWED_MSG
+                )
             }
         } else {
             completionHandler.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
-                msg = "SDK is not initialized"
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
         }
     }
