@@ -62,7 +62,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                 }
                 else -> {
                     DependencyInjectorImpl.getInstance().getManifestRepository()
-                        .fetchManifestConfiguration(object :
+                        .fetchManifestConfiguration(edgeTagConfiguration.disableConsentCheck,object :
                             ApiDataProvider<ManifestConfigurationResponse?>() {
                             override fun onFailed(
                                 errorCode: Int,
@@ -85,7 +85,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                             override fun onSuccess(data: ManifestConfigurationResponse?) {
                                 isSdkinitiliazed = true
                                 DependencyInjectorImpl.getInstance().initialize()
-                                validateDisableConsentCheck(edgeTagConfiguration.disableConsentCheck)
+                                //validateDisableConsentCheck(edgeTagConfiguration.disableConsentCheck)
                                 completionHandler.onSuccess()
                             }
 
@@ -95,7 +95,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         }
     }
 
-    private fun validateDisableConsentCheck(disableConsentCheck: Boolean) {
+    /*private fun validateDisableConsentCheck(disableConsentCheck: Boolean) {
         if (disableConsentCheck) {
             val consent = hashMapOf<String, Boolean>()
             consent.put("all", true)
@@ -108,7 +108,7 @@ open class EdgeTagInternal : EdgeTagInterface {
 
             })
         }
-    }
+    }*/
 
     @Synchronized
     override fun consent(

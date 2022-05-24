@@ -12,8 +12,8 @@ import retrofit2.Response
 
 class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
 
-  fun getSDKManifest(): Call<ManifestConfigurationResponse> {
-    return remoteApiService.getSDKManifest()
+  fun getSDKManifest(disableConsentCheck:Boolean): Call<ManifestConfigurationResponse> {
+    return remoteApiService.getSDKManifest(disableConsentCheck)
   }
 
   fun postEvents(events: EdgetagMetaData): Call<Any> {

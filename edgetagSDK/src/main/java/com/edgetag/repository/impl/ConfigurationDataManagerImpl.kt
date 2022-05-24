@@ -10,8 +10,8 @@ class ConfigurationDataManagerImpl(private val dataSource: RemoteApiDataSource) 
   ConfigurationDataManager {
 
 
-  override fun downloadManifestConfiguration(handler: ApiDataProvider<ManifestConfigurationResponse?>){
-    return dataSource.getSDKManifest().enqueue(handler)
+  override fun downloadManifestConfiguration(disableConsentCheck:Boolean,handler: ApiDataProvider<ManifestConfigurationResponse?>){
+    return dataSource.getSDKManifest(disableConsentCheck).enqueue(handler)
   }
 
   override fun publishEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>) {

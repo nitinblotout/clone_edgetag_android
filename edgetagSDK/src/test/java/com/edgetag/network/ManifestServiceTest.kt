@@ -68,7 +68,7 @@ class ManifestServiceTest {
         val apiResult = com.edgetag.model.Result.Success(MockTestConstants.getManifestResponse())
         coroutineTestRule.runBlockingTest {
             //Mockito.`when`(configureDataManager.downloadManifestConfiguration()).thenReturn(apiResult)
-            manifestRepository.fetchManifestConfiguration(object :
+            manifestRepository.fetchManifestConfiguration(true,object :
                 ApiDataProvider<ManifestConfigurationResponse?>() {
                 override fun onFailed(
                     errorCode: Int,
@@ -95,7 +95,7 @@ class ManifestServiceTest {
         val apiResult =
             com.edgetag.model.Result.Error(InternalError(code = ErrorCodes.ERROR_CODE_MANIFEST_NOT_AVAILABLE))
         coroutineTestRule.runBlockingTest {
-            manifestRepository.fetchManifestConfiguration(object :
+            manifestRepository.fetchManifestConfiguration(true,object :
                 ApiDataProvider<ManifestConfigurationResponse?>() {
                 override fun onFailed(
                     errorCode: Int,

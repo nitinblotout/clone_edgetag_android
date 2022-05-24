@@ -15,8 +15,8 @@ class ManifestRepository(private val configurationDataManager: ConfigurationData
 
     lateinit var manifestConfigurationResponse:ManifestConfigurationResponse
 
-    fun fetchManifestConfiguration(callback: ApiDataProvider<ManifestConfigurationResponse?>) {
-        configurationDataManager.downloadManifestConfiguration(object : ApiDataProvider<ManifestConfigurationResponse?>() {
+    fun fetchManifestConfiguration(disableConsentCheck:Boolean,callback: ApiDataProvider<ManifestConfigurationResponse?>) {
+        configurationDataManager.downloadManifestConfiguration(disableConsentCheck,object : ApiDataProvider<ManifestConfigurationResponse?>() {
             override fun onFailed(
                 errorCode: Int,
                 message: String,
