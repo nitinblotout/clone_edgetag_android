@@ -22,4 +22,5 @@ object Constant {
   const val BOSDK_PATCH_VERSION = 0
 
   val allowedUserKeys = arrayOf("email", "phone", "firstName","lastName","gender","dateOfBirth","country","state","city","zip")
+
 }
