@@ -79,4 +79,32 @@ eventInfo.put("facebook","capture");
 EdgeTag.INSTANCE.tag("EventName ",eventInfo,providerInfo);
 ```
 
+## user
+The `user` method is  quite important for conversion API's. This API allows you to build you ID graph on the edge, which allows you to persist data.
+Note: User consent needs to be implement to protect users.
+
+#### Input
+`user(key: String, value: String, completionHandler: CompletionHandler)`
+
+|||||
+|---|---|---|---|
+| `key` | `String` | Required | Which user info are you sending.Allowed values: email, phone, firstName, lastName, gender, dateOfBirth, country, state, city, zip |
+| `value` | `String` | Required | Value that you would like to associate with user key. |
+| `comletionHandler` | `CompletionHandler`| Return callback for sdk success and failure|
+
+#### Example
+```Java
+EdgeTag.INSTANCE.user("email","me@domain.com", new CompletionHandler() {
+@Override
+public void onSuccess() {
+        user_response.setText("Success");
+        }
+
+@Override
+public void onError(int code, String msg) {
+        user_response.setText(msg);
+        }
+        });
+```
+
 
