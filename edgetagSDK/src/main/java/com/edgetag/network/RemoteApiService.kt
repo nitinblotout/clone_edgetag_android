@@ -26,5 +26,17 @@ interface RemoteApiService {
   @POST(Constant.EDGE_USER_EVENTS_PUSH_PATH)
   fun postUserEvents(@Body body: EdgetagMetaData): Call<Any>
 
+  @Retry(3)
+  @POST(Constant.EDGE_EVENTS_DATA)
+  fun postData(@Body body: EdgetagMetaData): Call<Any>
+
+  @Retry(3)
+  @GET(Constant.EDGE_EVENTS_DATA)
+  fun getData(@Query("keys") keys:String): Call<Any>
+
+  @Retry(3)
+  @GET(Constant.EDGE_EVENTS_GET_KEY)
+  fun getKeys(): Call<Any>
+
 
 }

@@ -6,6 +6,7 @@ import android.util.Log
 import com.edgetag.data.database.EventDatabase
 import com.edgetag.model.CompletionHandler
 import com.edgetag.model.ErrorCodes
+import com.edgetag.model.OnComplete
 import com.edgetag.model.Result
 import com.edgetag.model.edgetag.ManifestConfigurationResponse
 import com.edgetag.network.ApiDataProvider
@@ -63,34 +64,35 @@ open class EdgeTagInternal : EdgeTagInterface {
                 }
                 else -> {
                     DependencyInjectorImpl.getInstance().getManifestRepository()
-                        .fetchManifestConfiguration(edgeTagConfiguration.disableConsentCheck,object :
-                            ApiDataProvider<ManifestConfigurationResponse?>() {
-                            override fun onFailed(
-                                errorCode: Int,
-                                message: String,
-                                call: Call<ManifestConfigurationResponse?>
-                            ) {
-                                completionHandler.onError(code = errorCode, msg = message)
-                            }
+                        .fetchManifestConfiguration(edgeTagConfiguration.disableConsentCheck,
+                            object :
+                                ApiDataProvider<ManifestConfigurationResponse?>() {
+                                override fun onFailed(
+                                    errorCode: Int,
+                                    message: String,
+                                    call: Call<ManifestConfigurationResponse?>
+                                ) {
+                                    completionHandler.onError(code = errorCode, msg = message)
+                                }
 
-                            override fun onError(
-                                t: Throwable,
-                                call: Call<ManifestConfigurationResponse?>
-                            ) {
-                                completionHandler.onError(
-                                    code = ErrorCodes.ERROR_CODE_NETWORK_ERROR,
-                                    msg = t.localizedMessage!!
-                                )
-                            }
+                                override fun onError(
+                                    t: Throwable,
+                                    call: Call<ManifestConfigurationResponse?>
+                                ) {
+                                    completionHandler.onError(
+                                        code = ErrorCodes.ERROR_CODE_NETWORK_ERROR,
+                                        msg = t.localizedMessage!!
+                                    )
+                                }
 
-                            override fun onSuccess(data: ManifestConfigurationResponse?) {
-                                isSdkinitiliazed = true
-                                DependencyInjectorImpl.getInstance().initialize()
-                                //validateDisableConsentCheck(edgeTagConfiguration.disableConsentCheck)
-                                completionHandler.onSuccess()
-                            }
+                                override fun onSuccess(data: ManifestConfigurationResponse?) {
+                                    isSdkinitiliazed = true
+                                    DependencyInjectorImpl.getInstance().initialize()
+                                    //validateDisableConsentCheck(edgeTagConfiguration.disableConsentCheck)
+                                    completionHandler.onSuccess()
+                                }
 
-                        })
+                            })
                 }
             }
         }
@@ -116,7 +118,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         consentInfo: HashMap<String, Boolean>,
         completionHandler: CompletionHandler
     ) {
-        if(isSdkinitiliazed) {
+        if (isSdkinitiliazed) {
             CoroutineScope(Dispatchers.Default).launch {
                 try {
 
@@ -144,7 +146,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                     )
                 }
             }
-        }else{
+        } else {
             completionHandler.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
@@ -158,7 +160,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         providerInfo: HashMap<String, Boolean>?,
         completionHandler: CompletionHandler
     ) {
-        if(isSdkinitiliazed) {
+        if (isSdkinitiliazed) {
             CoroutineScope(Dispatchers.Default).launch {
                 try {
 
@@ -188,7 +190,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                     )
                 }
             }
-        }else{
+        } else {
             completionHandler.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
@@ -202,7 +204,7 @@ open class EdgeTagInternal : EdgeTagInterface {
         completionHandler: CompletionHandler
     ) {
         if (isSdkinitiliazed) {
-            if(Constant.allowedUserKeys.contains(key)) {
+            if (Constant.allowedUserKeys.contains(key)) {
                 CoroutineScope(Dispatchers.Default).launch {
                     try {
 
@@ -229,7 +231,7 @@ open class EdgeTagInternal : EdgeTagInterface {
                         )
                     }
                 }
-            }else{
+            } else {
                 completionHandler.onError(
                     code = ErrorCodes.ERROR_CODE_KEY_NOT_ALLOWED,
                     msg = ErrorCodes.ERROR_CODE_KEY_NOT_ALLOWED_MSG
@@ -237,6 +239,113 @@ open class EdgeTagInternal : EdgeTagInterface {
             }
         } else {
             completionHandler.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
+            )
+        }
+    }
+
+    override fun postData(
+        data: HashMap<String, Any>,
+        onComplete: OnComplete
+    ) {
+        if (isSdkinitiliazed) {
+            data.forEach { (key, value) ->
+                if (!(value is Boolean || value is String || value is Float || value is Int || value is Double || value is Long)) {
+                    onComplete.onError(
+                        code = ErrorCodes.ERROR_CODE_VALUE_FORMAT_ERROR,
+                        msg = "value can be string | number | boolean only"
+                    )
+                    return
+                }
+            }
+
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
+
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    eventsRepository.postData(
+                        data = data,
+                        onComplete
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    onComplete.onError(
+                        code = ErrorCodes.ERROR_CODE_POST_DATA_ERROR,
+                        msg = e.localizedMessage ?: ""
+                    )
+                }
+            }
+
+        } else {
+            onComplete.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
+            )
+        }
+    }
+
+    override fun getData(
+        keys: ArrayList<String>,
+        onComplete: OnComplete
+    ) {
+        if (isSdkinitiliazed) {
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
+
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    eventsRepository.getDataEvents(
+                        keys = keys,
+                        onComplete
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    onComplete.onError(
+                        code = ErrorCodes.ERROR_CODE_GET_DATA_ERROR,
+                        msg = e.localizedMessage ?: ""
+                    )
+                }
+            }
+
+        } else {
+            onComplete.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
+            )
+        }
+    }
+
+    override fun getKeys(
+        onComplete: OnComplete
+    ) {
+        if (isSdkinitiliazed) {
+            CoroutineScope(Dispatchers.Default).launch {
+                try {
+
+                    val eventsRepository =
+                        EventRepository(
+                            DependencyInjectorImpl.getInstance().getSecureStorageService()
+                        )
+                    eventsRepository.getKeyEvents(
+                        onComplete
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, e.toString())
+                    onComplete.onError(
+                        code = ErrorCodes.ERROR_CODE_GET_KEY_ERROR,
+                        msg = e.localizedMessage ?: ""
+                    )
+                }
+            }
+
+        } else {
+            onComplete.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
