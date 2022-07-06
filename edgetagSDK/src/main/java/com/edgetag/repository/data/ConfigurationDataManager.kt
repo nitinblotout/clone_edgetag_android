@@ -10,4 +10,7 @@ interface ConfigurationDataManager {
   fun publishEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>)
   fun publishConsentEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>)
   fun publishUserEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>)
+  fun publishDataEvents(events: EdgetagMetaData, handler: ApiDataProvider<Any?>)
+  fun getDataEvents(keys:String,handler: ApiDataProvider<Any?>)
+  fun getKeyEvents(handler: ApiDataProvider<Any?>)
 }

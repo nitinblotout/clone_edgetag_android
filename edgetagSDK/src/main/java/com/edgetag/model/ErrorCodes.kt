@@ -14,6 +14,11 @@ object ErrorCodes {
     const val ERROR_CODE_NO_PROVIDER_FOUND =9
     const val ERROR_CODE_CONSENT_AVAILABLE_BUT_NO_PROVIDER_FOUND =10
     const val ERROR_CODE_KEY_NOT_ALLOWED =11
+    const val ERROR_CODE_POST_DATA_ERROR =12
+    const val ERROR_CODE_GET_DATA_ERROR =13
+    const val ERROR_CODE_GET_KEY_ERROR =14
+    const val ERROR_CODE_VALUE_FORMAT_ERROR =15
+
 
     const val ERROR_CODE_SDK_NOT_ENABLED_MSG = "SDK is not initialized"
     const val ERROR_CODE_KEY_NOT_ALLOWED_MSG = "Key does not belong to the permitted list of keys , Permmited keys: email, phone, firstName, lastName, gender, dateOfBirth, country, state, city, zip"
