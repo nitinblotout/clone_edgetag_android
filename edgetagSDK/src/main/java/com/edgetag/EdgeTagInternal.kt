@@ -246,19 +246,19 @@ open class EdgeTagInternal : EdgeTagInterface {
     }
 
     override fun postData(
-        data: HashMap<String, Any>,
+        data: HashMap<String, String>?,
         onComplete: OnComplete
     ) {
         if (isSdkinitiliazed) {
-            data.forEach { (key, value) ->
-                if (!(value is Boolean || value is String || value is Float || value is Int || value is Double || value is Long)) {
-                    onComplete.onError(
-                        code = ErrorCodes.ERROR_CODE_VALUE_FORMAT_ERROR,
-                        msg = "value can be string | number | boolean only"
-                    )
-                    return
-                }
+
+            if (data == null || onComplete == null) {
+                onComplete.onError(
+                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
+                    msg = "Argument missing"
+                )
+                return
             }
+
 
             CoroutineScope(Dispatchers.Default).launch {
                 try {
@@ -289,10 +289,17 @@ open class EdgeTagInternal : EdgeTagInterface {
     }
 
     override fun getData(
-        keys: ArrayList<String>,
+        keys: ArrayList<String>?,
         onComplete: OnComplete
     ) {
         if (isSdkinitiliazed) {
+            if (keys == null || onComplete == null) {
+                onComplete.onError(
+                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
+                    msg = "Argument missing"
+                )
+                return
+            }
             CoroutineScope(Dispatchers.Default).launch {
                 try {
 
@@ -325,6 +332,13 @@ open class EdgeTagInternal : EdgeTagInterface {
         onComplete: OnComplete
     ) {
         if (isSdkinitiliazed) {
+            if (onComplete == null) {
+                onComplete.onError(
+                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
+                    msg = "Argument missing"
+                )
+                return
+            }
             CoroutineScope(Dispatchers.Default).launch {
                 try {
 

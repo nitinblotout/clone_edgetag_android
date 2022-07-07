@@ -1,10 +1,11 @@
 package com.edgetag.network
 
 import com.edgetag.DependencyInjectorImpl
+import com.edgetag.model.ErrorCodes
+import com.edgetag.model.InternalError
+import com.edgetag.model.Result
 import com.edgetag.util.Constant
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -40,7 +41,7 @@ class RemoteApiClient(private val hostConfiguration: HostConfiguration) {
                 addHeader("Content-Type","application/json").
                 addHeader("cookie", Constant.TAG_USER_ID+"="+DependencyInjectorImpl.getInstance().getSecureStorageService().fetchString(Constant.TAG_USER_ID)).build()
                 chain.proceed(request)
-            }
+            }.addInterceptor(ReceivedCookiesInterceptor())
 
             connectTimeout(hostConfiguration.mConnectionTimeout, TimeUnit.MILLISECONDS)
             readTimeout(hostConfiguration.mReadTimeout, TimeUnit.MILLISECONDS)
@@ -50,4 +51,51 @@ class RemoteApiClient(private val hostConfiguration: HostConfiguration) {
         }
     }
 
+    class ReceivedCookiesInterceptor: Interceptor {
+
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val originalResponse = chain.proceed(chain.request())
+            if (!originalResponse.headers("Set-Cookie").isEmpty()) {
+                for (header in originalResponse.headers("Set-Cookie")) {
+                    header.saveCookies()
+                }
+            }
+
+            return originalResponse;
+        }
+
+        fun <T> processNetworkResponse(response: retrofit2.Response<T>): Result<T?> {
+            return try {
+                when (response.isSuccessful) {
+                    true -> {
+                        response.headers().get("set-cookie")!!.saveCookies()
+                        Result.Success(response.body())
+                    }
+                    false -> {
+                        val errorResponseString = response.errorBody()?.string()
+                        Result.Error(
+                            errorData = InternalError(code = response.code(), msg = response.message())
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Result.Error(errorData = InternalError(code = ErrorCodes.ERROR_CODE_NETWORK_ERROR))
+            }
+
+        }
+
+        fun String.saveCookies()  {
+            if (DependencyInjectorImpl.getInstance().getSecureStorageService()
+                    .fetchString(Constant.TAG_USER_ID).isEmpty()
+            ) {
+                val cookiesArray = split(";")
+                for (cookie in cookiesArray) {
+                    val individualcookie = cookie.split("=")
+                    if (individualcookie[0].contentEquals(Constant.TAG_USER_ID))
+                        DependencyInjectorImpl.getInstance().getSecureStorageService()
+                            .storeString(Constant.TAG_USER_ID, individualcookie[1])
+                }
+            }
+        }
+    }
 }

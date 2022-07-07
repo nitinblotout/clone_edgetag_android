@@ -28,12 +28,12 @@ interface EdgeTagInterface {
     )
 
     fun postData(
-        data: HashMap<String, Any>,
+        data: HashMap<String, String>?,
         onComplete: OnComplete
     )
 
     fun getData(
-        keys: ArrayList<String>,
+        keys: ArrayList<String>?,
         onComplete: OnComplete
     )
 

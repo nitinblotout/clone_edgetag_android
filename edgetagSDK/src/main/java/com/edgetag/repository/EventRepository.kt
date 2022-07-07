@@ -17,8 +17,11 @@ import com.edgetag.network.ApiDataProvider
 import com.edgetag.repository.data.SharedPreferenceSecureVault
 import com.edgetag.util.Constant
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import retrofit2.Call
+
+
+
 
 class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
 
@@ -300,7 +303,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
         return Result.Success("")
     }
 
-    fun postData(data: HashMap<String, Any>, onComplete: OnComplete) {
+    fun postData(data: HashMap<String, String>, onComplete: OnComplete) {
         val tagMetadata = EdgetagMetaData()
         val storage = Storage()
         val edgeTag = EdgeTag()
@@ -309,7 +312,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
         storage.edgeTag = edgeTag
         storage.data = getRefferals()
         tagMetadata.storage = storage
-        tagMetadata.data = data
+        tagMetadata.data = data as HashMap<String, Any>
         tagMetadata.tag_user_id = DependencyInjectorImpl.getInstance().getSecureStorageService()
             .fetchString(Constant.TAG_USER_ID)
 
@@ -328,7 +331,11 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 }
 
                 override fun onSuccess(data: Any?) {
-                    onComplete.onSuccess(msg = data.toString())
+                    try {
+                        onComplete.onSuccess(msg = data.toString())
+                    }catch (e:java.lang.Exception){
+                        onComplete.onError(code = ErrorCodes.ERROR_CODE_JSON_PARSING_ERROR)
+                    }
                 }
             })
     }
@@ -355,10 +362,19 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 }
 
                 override fun onSuccess(data: Any?) {
-                    val retMap: Map<String, Any> = Gson().fromJson(
-                        data.toString(), object : TypeToken<HashMap<String?, Any?>?>() {}.type
-                    )
-                    onComplete.onSuccess(msg = retMap)
+                    try {
+                        val obj = JSONObject(data.toString())
+                        val values = obj.getJSONObject("result")
+
+                        val retMap = Gson().fromJson<HashMap<String, String>>(
+                            values.toString(),
+                            HashMap::class.java
+                        )
+
+                        onComplete.onSuccess(msg = retMap)
+                    }catch (e:java.lang.Exception){
+                        onComplete.onError(code = ErrorCodes.ERROR_CODE_JSON_PARSING_ERROR)
+                    }
                 }
             })
     }
@@ -379,10 +395,19 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 }
 
                 override fun onSuccess(data: Any?) {
-                    /*val retMap: Map<String, Any> = Gson().fromJson(
-                        data.toString(), object : TypeToken<ArrayList<String?>>() {}.type
-                    )*/
-                    onComplete.onSuccess(msg = data.toString())
+                    try {
+                        val obj = JSONObject(data.toString())
+                        val values = obj.getJSONArray("result")
+
+                        val retMap = Gson().fromJson<ArrayList<String>>(
+                            values.toString(),
+                            ArrayList::class.java
+                        )
+
+                        onComplete.onSuccess(msg = retMap)
+                    }catch (e:java.lang.Exception){
+                        onComplete.onError(code = ErrorCodes.ERROR_CODE_JSON_PARSING_ERROR)
+                    }
                 }
             })
     }

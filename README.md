@@ -134,7 +134,7 @@ You can use this API if you would like to save multiple user records at the same
 
 |||||
 |---|---|---|---|
-| `data` | `string | number | boolean` | Required | Data that you would like to persist on the edge. |
+| `data` | `HashMap<String, String> ` | Required | Data that you would like to persist on the edge. |
 | `onComplete` | `OnComplete`| Required |Return callback for API success response and failure|
 
 #### Example
