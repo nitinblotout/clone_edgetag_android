@@ -17,7 +17,6 @@ import com.edgetag.network.ApiDataProvider
 import com.edgetag.repository.data.SharedPreferenceSecureVault
 import com.edgetag.util.Constant
 import com.google.gson.Gson
-import org.json.JSONObject
 import retrofit2.Call
 
 
@@ -362,10 +361,9 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 }
 
                 override fun onSuccess(data: Any?) {
-                    try {
-                        val obj = JSONObject(data.toString())
-                        val values = obj.getJSONObject("result")
 
+                    try {
+                        val values = Gson().toJsonTree(data).getAsJsonObject().getAsJsonObject("result");
                         val retMap = Gson().fromJson<HashMap<String, String>>(
                             values.toString(),
                             HashMap::class.java
@@ -396,8 +394,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
 
                 override fun onSuccess(data: Any?) {
                     try {
-                        val obj = JSONObject(data.toString())
-                        val values = obj.getJSONArray("result")
+                        val values = Gson().toJsonTree(data).getAsJsonObject().getAsJsonArray("result");
 
                         val retMap = Gson().fromJson<ArrayList<String>>(
                             values.toString(),

@@ -26,7 +26,7 @@ class RemoteApiDataSource(private val remoteApiService: RemoteApiService) {
     return remoteApiService.postData(events)
   }
 
-  fun getDataEvents(keys:String): Call<Any> {
+  fun getDataEvents(keys:String): Call<Any?> {
     return remoteApiService.getData(keys)
   }
 
