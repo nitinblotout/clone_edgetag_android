@@ -30,7 +30,7 @@ class ConfigurationDataManagerImpl(private val dataSource: RemoteApiDataSource) 
     dataSource.postDataEvents(events).enqueue(handler)
   }
 
-  override fun getDataEvents(keys:String,handler: ApiDataProvider<Any?>) {
+  override fun getDataEvents(keys:String, handler: ApiDataProvider<Any?>) {
     dataSource.getDataEvents(keys).enqueue(handler)
   }
 

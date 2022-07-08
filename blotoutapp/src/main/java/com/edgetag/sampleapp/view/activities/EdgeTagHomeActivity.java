@@ -174,13 +174,13 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
     private void handlePostData() {
         HashMap<String, String> data = new HashMap<>();
         data.put("email", "me@abckl.ij");
-        data.put("value1", "1000");
-        data.put("currency", "USD");
-        data.put("newuser", "false");
+        data.put("cutomInfo", "Random string entry");
+        data.put("numberValue", "987");
+        data.put("testBool", "false");
         gson = new Gson();
         post_data.setText(gson.toJson(data));
         post_data_button_press.setOnClickListener(v -> {
-            EdgeTag.INSTANCE.postData(null, new OnComplete() {
+            EdgeTag.INSTANCE.postData(data, new OnComplete() {
                 @Override
                 public void onSuccess(@NonNull Object msg) {
                     post_data_response.setText(msg.toString());
@@ -197,9 +197,9 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
     private void handlegetData() {
         ArrayList<String> key = new ArrayList<>();
         key.add("email");
-        key.add("value");
-        key.add("currency");
-        key.add("new user");
+        key.add("cutomInfo");
+        key.add("numberValue");
+        key.add("testBool");
         gson = new Gson();
         get_data.setText(gson.toJson(key));
         get_data_button_press.setOnClickListener(v -> {

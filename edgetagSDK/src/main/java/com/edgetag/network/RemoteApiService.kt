@@ -32,7 +32,7 @@ interface RemoteApiService {
 
   @Retry(3)
   @GET(Constant.EDGE_EVENTS_DATA)
-  fun getData(@Query("keys") keys:String): Call<Any>
+  fun getData(@Query("keys") keys:String): Call<Any?>
 
   @Retry(3)
   @GET(Constant.EDGE_EVENTS_GET_KEY)
