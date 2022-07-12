@@ -26,6 +26,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
 
     companion object {
         private const val TAG = "EventRepository"
+        private var globalData = hashMapOf<String,String>()
     }
 
     lateinit var visibleActivity: Activity
@@ -79,7 +80,8 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
             edgeTag.providers = getProviders()
             edgeTag.consent = getConsentInfo()
             storage.edgeTag = edgeTag
-            storage.data = getRefferals()
+            storage.data = getRefferalData()
+            storage.kv = globalData
             tagMetadata.storage = storage
             tagMetadata.consentString = getConsentInfo()
             tagMetadata.tag_user_id = DependencyInjectorImpl.getInstance().getSecureStorageService()
@@ -118,6 +120,8 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
             edgeTag.providers = getProviders()
             edgeTag.consent = consentInfo
             storage.edgeTag = edgeTag
+            storage.data = getRefferalData()
+            storage.kv = globalData
             consentMetadata.storage = storage
             consentMetadata.tag_user_id =
                 DependencyInjectorImpl.getInstance().getSecureStorageService()
@@ -145,6 +149,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
         key: String, value: String
     ): Result<String> {
         return try {
+            globalData[key] = value
             val consentMetadata = EdgetagMetaData()
             consentMetadata.key = key
             consentMetadata.value = value
@@ -157,6 +162,8 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 HashMap::class.java
             )
             storage.edgeTag = edgeTag
+            storage.data = getRefferalData()
+            storage.kv= globalData
             consentMetadata.storage = storage
             consentMetadata.tag_user_id =
                 DependencyInjectorImpl.getInstance().getSecureStorageService()
@@ -190,7 +197,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
         return providers
     }
 
-    private fun getRefferals(): HashMap<String, HashMap<String, String>> {
+    private fun getRefferalData(): HashMap<String, HashMap<String, String>> {
         val refferalToPush = hashMapOf<String, HashMap<String, String>>()
         val refferals = DependencyInjectorImpl.getInstance().getSecureStorageService()
             .fetchString(Constant.REFFERAL)
@@ -303,13 +310,15 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
     }
 
     fun postData(data: HashMap<String, String>, onComplete: OnComplete) {
+        globalData.putAll(data)
         val tagMetadata = EdgetagMetaData()
         val storage = Storage()
         val edgeTag = EdgeTag()
         edgeTag.providers = getProviders()
         edgeTag.consent = getConsentInfo()
         storage.edgeTag = edgeTag
-        storage.data = getRefferals()
+        storage.data = getRefferalData()
+        storage.kv= globalData
         tagMetadata.storage = storage
         tagMetadata.data = data as HashMap<String, Any>
         tagMetadata.tag_user_id = DependencyInjectorImpl.getInstance().getSecureStorageService()
@@ -363,7 +372,7 @@ class EventRepository(private var secureStorage: SharedPreferenceSecureVault) {
                 override fun onSuccess(data: Any?) {
 
                     try {
-                        val values = Gson().toJsonTree(data).getAsJsonObject().getAsJsonObject("result");
+                        val values = Gson().toJsonTree(data).getAsJsonObject().getAsJsonObject("result")
                         val retMap = Gson().fromJson<HashMap<String, String>>(
                             values.toString(),
                             HashMap::class.java

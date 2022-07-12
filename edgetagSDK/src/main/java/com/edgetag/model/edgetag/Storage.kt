@@ -12,4 +12,8 @@ class Storage {
   @Expose
   var data: HashMap<String, HashMap<String, String>>? = null
 
+  @SerializedName("kv")
+  @Expose
+  var kv: HashMap<String, String>? = null
+
 }
