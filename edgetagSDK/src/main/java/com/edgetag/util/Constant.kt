@@ -11,6 +11,7 @@ object Constant {
   const val REFFERAL = "refferal"
   const val KEY = "key"
   const val VALUE = "value"
+  const val STORAGE_DATA = "kv"
 
   const val EDGE_TAG_REST_API_MANIFEST_PULL_PATH = "/init"
   const val EDGE_TAG_REST_API_EVENTS_PUSH_PATH = "/tag"
@@ -21,7 +22,7 @@ object Constant {
 
   const val BOSDK_MAJOR_VERSION = 0
   const val BOSDK_MINOR_VERSION = 4
-  const val BOSDK_PATCH_VERSION = 3
+  const val BOSDK_PATCH_VERSION = 4
 
   val allowedUserKeys = arrayOf("email", "phone", "firstName","lastName","gender","dateOfBirth","country","state","city","zip")
 
