@@ -33,6 +33,8 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
     EditText provider_key;
     TextView tag_response;
     TextView user_response;
+    EditText userkey;
+    EditText uservalue;
 
     EditText post_data;
     Button post_data_button_press;
@@ -44,6 +46,9 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
 
     Button get_key_button_press;
     TextView get_key_response;
+
+    Button ad_available_button_press;
+    TextView ad_available_response;
 
     Gson gson;
 
@@ -68,7 +73,8 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
 
         user_button_press = findViewById(R.id.user_button_press);
         user_response = findViewById(R.id.user_response);
-
+        uservalue = findViewById(R.id.uservalue);
+        userkey = findViewById(R.id.userkey);
         user_button_press = findViewById(R.id.user_button_press);
         user_response = findViewById(R.id.user_response);
 
@@ -82,6 +88,10 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
 
         get_key_button_press = findViewById(R.id.get_key_button_press);
         get_key_response = findViewById(R.id.get_key_response);
+
+        ad_available_button_press=findViewById(R.id.ad_available_button_press);
+        ad_available_response=findViewById(R.id.ad_available_response);
+
 
         HashMap<String, Boolean> consentHashMap = new HashMap<>();
         consentHashMap.put("facebook", true);
@@ -151,8 +161,11 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
             });
         });
 
+        uservalue.setText("me@domain.com");
+        userkey.setText("email");
+
         user_button_press.setOnClickListener(v -> {
-            EdgeTag.INSTANCE.user("email", "me@domain.com", new CompletionHandler() {
+            EdgeTag.INSTANCE.user(userkey.getText().toString(),uservalue.getText().toString(), new CompletionHandler() {
                 @Override
                 public void onSuccess() {
                     user_response.setText("Success");
@@ -168,7 +181,36 @@ public class EdgeTagHomeActivity extends AppCompatActivity {
         handlePostData();
         handlegetData();
         handlegetkey();
+        handleAdAvailability();
 
+    }
+
+    private void handleAdAvailability() {
+        ad_available_button_press.setOnClickListener(v -> {
+            EdgeTag.INSTANCE.isAdvertiserIdAvailable(new OnComplete() {
+
+                @Override
+                public void onError(int code, String msg) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ad_available_response.setText(msg);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onSuccess(Object msg) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ad_available_response.setText(msg.toString());
+                        }
+                    });
+                }
+            });
+        });
     }
 
     private void handlePostData() {

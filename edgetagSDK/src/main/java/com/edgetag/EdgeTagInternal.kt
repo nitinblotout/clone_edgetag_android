@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import com.edgetag.data.database.EventDatabase
+import com.edgetag.deviceinfo.device.DeviceInfo
 import com.edgetag.model.CompletionHandler
 import com.edgetag.model.ErrorCodes
 import com.edgetag.model.OnComplete
@@ -364,5 +365,16 @@ open class EdgeTagInternal : EdgeTagInterface {
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
         }
+    }
+
+    override fun isAdvertiserIdAvailable(onComplete: OnComplete) {
+        val context = DependencyInjectorImpl.getInstance().getApplication()
+        if(context!=null){
+            DeviceInfo(context).isLimitAdTrackingEnabled(onComplete)
+        }else
+            onComplete.onError(
+                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
+                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
+            )
     }
 }

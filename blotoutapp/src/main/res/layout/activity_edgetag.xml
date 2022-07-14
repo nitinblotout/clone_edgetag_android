@@ -48,6 +48,19 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"></TextView>
 
+      <Button
+          android:id="@+id/ad_available_button_press"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="10dp"
+          android:text="Is Ad available"></Button>
+
+      <TextView
+          android:id="@+id/ad_available_response"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="10dp"></TextView>
+
     </LinearLayout>
     <View
       android:layout_width="match_parent"
@@ -94,16 +107,23 @@
       android:layout_margin="20dp"
       android:orientation="vertical">
 
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="providers"></TextView>
+
+      <EditText
+          android:id="@+id/provider_key"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="10dp"></EditText>
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Tag"></TextView>
 
       <EditText
         android:id="@+id/tag_key"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"></EditText>
-
-
-      <EditText
-        android:id="@+id/provider_key"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"></EditText>
@@ -120,6 +140,36 @@
         android:id="@+id/tag_response"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></TextView>
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="2dp"
+          android:background="@color/accent">
+      </View>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="100dp"
+          android:orientation="horizontal">
+        <EditText
+            android:id="@+id/userkey"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint="user key"
+            android:layout_margin="10dp">
+
+        </EditText>
+
+        <EditText
+            android:id="@+id/uservalue"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint="user value"
+            android:layout_margin="10dp">
+
+        </EditText>
+
+      </LinearLayout>
 
       <Button
           android:id="@+id/user_button_press"

@@ -17,6 +17,8 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.annotation.RequiresApi
 import com.edgetag.DependencyInjectorImpl
+import com.edgetag.model.ErrorCodes.ERROR_CODE_GET_AD_ID_ERROR
+import com.edgetag.model.OnComplete
 import com.edgetag.util.Constant
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import kotlinx.coroutines.GlobalScope
@@ -295,6 +297,17 @@ class DeviceInfo(private val context: Context) {
         DependencyInjectorImpl.getInstance().getSecureStorageService()
           .storeString(Constant.AD_ID, adId)
       }catch (e:Exception){
+      }
+    }
+  }
+
+  fun isLimitAdTrackingEnabled(onComplete: OnComplete){
+    GlobalScope.launch {
+      try {
+        val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
+        onComplete.onSuccess(!adInfo.isLimitAdTrackingEnabled)
+      }catch (e:Exception){
+        onComplete.onError(code = ERROR_CODE_GET_AD_ID_ERROR, msg = e.toString())
       }
     }
   }

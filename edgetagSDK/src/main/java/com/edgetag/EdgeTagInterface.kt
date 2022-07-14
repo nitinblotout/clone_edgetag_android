@@ -40,4 +40,8 @@ interface EdgeTagInterface {
     fun getKeys(
         onComplete: OnComplete
     )
+
+    fun isAdvertiserIdAvailable(
+        onComplete: OnComplete
+    )
 }
