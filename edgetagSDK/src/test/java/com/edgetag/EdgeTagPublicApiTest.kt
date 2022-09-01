@@ -5,6 +5,7 @@ import com.edgetag.data.database.EventDatabase
 import com.edgetag.model.CompletionHandler
 import com.edgetag.model.ErrorCodes
 import com.edgetag.model.InternalError
+import com.edgetag.model.OnComplete
 import com.edgetag.network.HostConfiguration
 import com.edgetag.repository.data.SharedPreferenceSecureVault
 import com.edgetag.repository.impl.SharedPreferenceSecureVaultImpl
@@ -20,6 +21,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+import java.util.*
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -101,6 +103,84 @@ class EdgeTagPublicApiTest {
             }
             override fun onError(code: Int, msg: String) {
             }
+        })
+    }
+
+    @Test
+    fun `test user API`() {
+        val key: String = "email"
+        val value: String = "me@domain.com"
+
+        EdgeTag.user(key,value,object : CompletionHandler {
+            override fun onSuccess() {
+                assertTrue(true)
+            }
+            override fun onError(code: Int, msg: String) {
+            }
+        })
+    }
+
+    @Test
+    fun `test postData`() {
+        val dataToPost = hashMapOf<String,String>()
+        dataToPost["email"] = "me@abckl.ij"
+        dataToPost["cutomInfo"] = "Random string entry"
+        dataToPost["numberValue"] = "987"
+        dataToPost["testBool"] = "false"
+
+        EdgeTag.postData(dataToPost,object : OnComplete {
+            override fun onSuccess(msg: Any) {
+                assertTrue(true)
+            }
+
+            override fun onError(code: Int, msg: String) {
+            }
+
+        })
+    }
+
+    @Test
+    fun `test getData`() {
+        val key = ArrayList<String>()
+        key.add("email")
+        key.add("cutomInfo")
+        key.add("numberValue")
+        key.add("testBool")
+
+        EdgeTag.getData(key,object : OnComplete {
+            override fun onSuccess(msg: Any) {
+                assertTrue(true)
+            }
+
+            override fun onError(code: Int, msg: String) {
+            }
+
+        })
+    }
+
+    @Test
+    fun `test getKeys`() {
+        EdgeTag.getKeys(object : OnComplete {
+            override fun onSuccess(msg: Any) {
+                assertTrue(true)
+            }
+
+            override fun onError(code: Int, msg: String) {
+            }
+
+        })
+    }
+
+    @Test
+    fun `test isAdvertiserIdAvailable`() {
+        EdgeTag.isAdvertiserIdAvailable(object : OnComplete {
+            override fun onSuccess(msg: Any) {
+                assertTrue(true)
+            }
+
+            override fun onError(code: Int, msg: String) {
+            }
+
         })
     }
 
