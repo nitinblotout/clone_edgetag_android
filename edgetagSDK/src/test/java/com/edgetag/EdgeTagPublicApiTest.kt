@@ -11,17 +11,18 @@ import com.edgetag.repository.data.SharedPreferenceSecureVault
 import com.edgetag.repository.impl.SharedPreferenceSecureVaultImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import java.util.*
+
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -139,6 +140,11 @@ class EdgeTagPublicApiTest {
         })
     }
 
+    @Test(expected = java.lang.Exception::class)
+    fun `test postData when data and callback not provided`() {
+        verify( EdgeTag.postData(null, null))
+    }
+
     @Test
     fun `test getData`() {
         val key = ArrayList<String>()
@@ -158,6 +164,55 @@ class EdgeTagPublicApiTest {
         })
     }
 
+    @Test(expected = java.lang.Exception::class)
+    fun `test getData when key and callback not provided`() {
+        verify( EdgeTag.getData(null, null))
+    }
+
+    @Test
+    fun `test getData when SDK not initialized`() {
+        val key = ArrayList<String>()
+        key.add("xyz")
+
+        EdgeTag.getData(key,object : OnComplete {
+            override fun onSuccess(msg: Any) {
+            }
+
+            override fun onError(code: Int, msg: String) {
+                assertEquals(4,ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED)
+            }
+
+        })
+    }
+
+    @Test
+    fun `test getData when key  not available`() {
+        coroutineTestRule.runBlockingTest {
+            val edgeTagConfiguration = MockTestConstants.setupBlotoutAnalyticsConfiguration()
+            EdgeTag.init(context, edgeTagConfiguration, object : CompletionHandler {
+                override fun onSuccess() {
+                    val key = ArrayList<String>()
+                    key.add("xyz")
+                    EdgeTag.getData(key,object : OnComplete {
+                        override fun onSuccess(msg: Any) {
+                            assertEquals("",msg.toString().isEmpty())
+                        }
+
+                        override fun onError(code: Int, msg: String) {
+                            assertFalse(true)
+                        }
+                    })
+                }
+                override fun onError(code: Int, msg: String) {
+                    assertFalse(true)
+                }
+            })
+        }
+
+    }
+
+
+
     @Test
     fun `test getKeys`() {
         EdgeTag.getKeys(object : OnComplete {
@@ -171,6 +226,12 @@ class EdgeTagPublicApiTest {
         })
     }
 
+    @Test(expected = java.lang.Exception::class)
+    fun `test getKeys when callback not provided`() {
+        verify( EdgeTag.getKeys(null))
+    }
+
+
     @Test
     fun `test isAdvertiserIdAvailable`() {
         EdgeTag.isAdvertiserIdAvailable(object : OnComplete {
@@ -182,6 +243,11 @@ class EdgeTagPublicApiTest {
             }
 
         })
+    }
+
+    @Test(expected = java.lang.Exception::class)
+    fun `test isAdvertiserIdAvailable when onComplete not provided`() {
+        verify( EdgeTag.isAdvertiserIdAvailable(null))
     }
 
     @Test

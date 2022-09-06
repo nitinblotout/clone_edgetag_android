@@ -301,13 +301,13 @@ class DeviceInfo(private val context: Context) {
     }
   }
 
-  fun isLimitAdTrackingEnabled(onComplete: OnComplete){
+  fun isLimitAdTrackingEnabled(onComplete: OnComplete?){
     GlobalScope.launch {
       try {
         val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-        onComplete.onSuccess(!adInfo.isLimitAdTrackingEnabled)
+        onComplete?.onSuccess(!adInfo.isLimitAdTrackingEnabled)
       }catch (e:Exception){
-        onComplete.onError(code = ERROR_CODE_GET_AD_ID_ERROR, msg = e.toString())
+        onComplete?.onError(code = ERROR_CODE_GET_AD_ID_ERROR, msg = e.toString())
       }
     }
   }

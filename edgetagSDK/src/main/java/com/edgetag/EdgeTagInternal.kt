@@ -248,16 +248,12 @@ open class EdgeTagInternal : EdgeTagInterface {
 
     override fun postData(
         data: HashMap<String, String>?,
-        onComplete: OnComplete
+        onComplete: OnComplete?
     ) {
         if (isSdkinitiliazed) {
 
-            if (data == null || onComplete == null) {
-                onComplete.onError(
-                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
-                    msg = "Argument missing"
-                )
-                return
+            if (data == null || onComplete ==null) {
+                throw Exception("Argument missing")
             }
 
 
@@ -282,7 +278,7 @@ open class EdgeTagInternal : EdgeTagInterface {
             }
 
         } else {
-            onComplete.onError(
+            onComplete?.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
@@ -291,15 +287,11 @@ open class EdgeTagInternal : EdgeTagInterface {
 
     override fun getData(
         keys: ArrayList<String>?,
-        onComplete: OnComplete
+        onComplete: OnComplete ?
     ) {
         if (isSdkinitiliazed) {
-            if (keys == null || onComplete == null) {
-                onComplete.onError(
-                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
-                    msg = "Argument missing"
-                )
-                return
+            if (keys == null || onComplete ==null) {
+                throw Exception("Argument missing")
             }
             CoroutineScope(Dispatchers.Default).launch {
                 try {
@@ -322,7 +314,7 @@ open class EdgeTagInternal : EdgeTagInterface {
             }
 
         } else {
-            onComplete.onError(
+            onComplete?.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
@@ -330,15 +322,11 @@ open class EdgeTagInternal : EdgeTagInterface {
     }
 
     override fun getKeys(
-        onComplete: OnComplete
+        onComplete: OnComplete?
     ) {
         if (isSdkinitiliazed) {
-            if (onComplete == null) {
-                onComplete.onError(
-                    code = ErrorCodes.ERROR_CODE_DATA_MISSING_ERROR,
-                    msg = "Argument missing"
-                )
-                return
+            if (onComplete ==null) {
+                throw Exception("Argument missing")
             }
             CoroutineScope(Dispatchers.Default).launch {
                 try {
@@ -360,21 +348,20 @@ open class EdgeTagInternal : EdgeTagInterface {
             }
 
         } else {
-            onComplete.onError(
+            onComplete?.onError(
                 code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
                 msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
             )
         }
     }
 
-    override fun isAdvertiserIdAvailable(onComplete: OnComplete) {
+    override fun isAdvertiserIdAvailable(onComplete: OnComplete?) {
         val context = DependencyInjectorImpl.getInstance().getApplication()
-        if(context!=null){
+        if (onComplete ==null) {
+            throw Exception("Argument missing")
+        }
+        else {
             DeviceInfo(context).isLimitAdTrackingEnabled(onComplete)
-        }else
-            onComplete.onError(
-                code = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED,
-                msg = ErrorCodes.ERROR_CODE_SDK_NOT_ENABLED_MSG
-            )
+        }
     }
 }
