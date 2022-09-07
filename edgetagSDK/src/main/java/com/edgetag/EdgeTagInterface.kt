@@ -29,19 +29,19 @@ interface EdgeTagInterface {
 
     fun postData(
         data: HashMap<String, String>?,
-        onComplete: OnComplete
+        onComplete: OnComplete?
     )
 
     fun getData(
         keys: ArrayList<String>?,
-        onComplete: OnComplete
+        onComplete: OnComplete?
     )
 
     fun getKeys(
-        onComplete: OnComplete
+        onComplete: OnComplete?
     )
 
     fun isAdvertiserIdAvailable(
-        onComplete: OnComplete
+        onComplete: OnComplete?
     )
 }
