@@ -1,6 +1,7 @@
 package com.edgetag
 
 import android.app.Application
+import android.util.Log
 import com.android.installreferrer.api.ReferrerDetails
 import com.edgetag.data.database.EventDatabase
 import com.edgetag.deviceinfo.device.DeviceInfo
@@ -47,6 +48,7 @@ class DependencyInjectorImpl private constructor(
             mEventDatabase=eventDatabase
             try {
                 instance = DependencyInjectorImpl(application, secureStorageService, hostConfiguration, mEventDatabase)
+                instance.earlyInit()
             }catch (e:Exception){
                 e.printStackTrace()
                 return false
@@ -99,13 +101,21 @@ class DependencyInjectorImpl private constructor(
         return mSecureStorageService
     }
 
-    fun initialize(){
+    fun earlyInit(){
         try {
             sessionID = DateTimeUtils().get13DigitNumberObjTimeStamp()
             eventRepository = EventRepository(mSecureStorageService)
             val activityLifeCycleCallback =
                 AnalyticsActivityLifecycleCallbacks()
             mApplication.registerActivityLifecycleCallbacks(activityLifeCycleCallback)
+        }
+        catch (e:Throwable){
+            Log.d(TAG,e.localizedMessage!!)
+        }
+    }
+
+    fun initialize(){
+        try {
             eventRepository.publishEvent()
             InstallRefferal().startClient(mApplication)
             DeviceInfo(mApplication).getAdvertisingId()
