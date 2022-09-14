@@ -45,9 +45,9 @@ class AnalyticsActivityLifecycleCallbacks() :
                 numberOfActivities!!.set(0)
                 firstLaunch!!.set(true)
                 trackApplicationLifecycleEvents(activity)
-                trackDeepLink(activity)
                 DependencyInjectorImpl.getEventRepository().visibleActivity = activity
             }
+            trackDeepLink(activity)
             activityReference = WeakReference(activity)
             val view = activity.window.decorView.rootView
         } catch (e: Exception) {
